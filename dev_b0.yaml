@@ -1,0 +1,60 @@
+esphome:
+  name: dev_b0
+  platform: ESP8266
+  board: d1_mini
+
+wifi:
+  ssid: "My_Open_WiFi"
+  password: "open"
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+
+sensor:
+  - platform: rotary_encoder
+    name: "Rotary Encoder"
+    pin_a: D5
+    pin_b: D6
+    min_value: 1
+    max_value: 10
+    id: dev_b0_rotary
+    on_value:
+      - light.turn_on:
+           id: light_d8
+           brightness: !lambda |-
+                return id(dev_b0_rotary).state / 10.0;
+           # output value must be in range 0 - 1.0
+
+binary_sensor:
+  - platform: gpio
+    pin: D3
+    name: "Press Switch"    
+    on_press:
+      then:
+        - light.toggle:
+            id: light_d8
+    
+output:
+  #- platform: esp8266_pwm
+  #  pin: D2
+  #  frequency: 1000 Hz
+  #  id: pwm_output_d2
+  - platform: esp8266_pwm
+    pin: D8
+    frequency: 2000 Hz
+    id: pwm_output_d8
+    
+light:
+  #- platform: monochromatic
+  #  output: pwm_output_d2
+  #  name: "Kitchen Light"    
+  #  id: light_d2
+  - platform: monochromatic
+    output: pwm_output_d8
+    name: "Power LED"    
+    id: light_d8
